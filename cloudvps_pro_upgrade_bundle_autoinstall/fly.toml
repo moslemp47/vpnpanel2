@@ -1,0 +1,4 @@
+app = "cloudvps-pro"
+primary_region = "ams"
+[http_service]
+  internal_port = 8000

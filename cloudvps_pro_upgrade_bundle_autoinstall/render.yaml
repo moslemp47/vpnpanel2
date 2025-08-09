@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cloudvps-backend
+    env: docker
+    plan: starter
+    dockerfilePath: backend/Dockerfile
+    autoDeploy: true
+  - type: web
+    name: cloudvps-frontend
+    env: docker
+    plan: starter
+    dockerfilePath: frontend/Dockerfile
+    autoDeploy: true

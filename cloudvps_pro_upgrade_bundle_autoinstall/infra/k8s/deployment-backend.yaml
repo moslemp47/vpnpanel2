@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudvps-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: cloudvps-backend }
+  template:
+    metadata:
+      labels: { app: cloudvps-backend }
+    spec:
+      containers:
+        - name: api
+          image: your-registry/cloudvps-backend:latest
+          ports: [{ containerPort: 8000 }]

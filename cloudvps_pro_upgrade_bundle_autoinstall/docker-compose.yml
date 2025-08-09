@@ -1,0 +1,53 @@
+version: "3.9"
+services:
+  backend:
+    build: ./backend
+    env_file: .env
+    ports: ["8000:8000"]
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./data:/data
+  worker:
+    build: ./backend
+    command: sh -c "celery -A app.worker.celery_app worker -l info"
+    env_file: .env
+    depends_on: [backend, redis, db]
+    volumes:
+      - ./data:/data
+  beat:
+    build: ./backend
+    command: sh -c "celery -A app.worker.celery_app beat -l info"
+    env_file: .env
+    depends_on: [backend, redis, db]
+    volumes:
+      - ./data:/data
+  frontend:
+    build: ./frontend
+    env_file: .env
+    ports: ["5173:5173"]
+    depends_on: [backend]
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports: ["5432:5432"]
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports: ["9090:9090"]
+  grafana:
+    image: grafana/grafana
+    ports: ["3000:3000"]
+    depends_on: [prometheus]
+volumes:
+  pgdata:
